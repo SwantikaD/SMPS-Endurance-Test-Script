@@ -266,7 +266,7 @@ try:
         datalog(csv_filename, t_on)
 
         #Turn off pri and sec loads and turn on FC load
-        inst2.write(':ROUTe:CLOSe (%s)' % '@102,105') 
+        inst2.write(':ROUTe:OPEN (%s)' % '@102,105') 
         chStatus = query_34970A('@102,105')
         time.sleep(0.1)
         if len(chStatus) == 0:
@@ -279,7 +279,7 @@ try:
 
         time.sleep(1)
 
-        inst2.write(':ROUTe:CLOSe (%s)' % '@101,104') 
+        inst2.write(':ROUTe:OPEN (%s)' % '@101,104') 
         chStatus = query_34970A('@101,104')
         time.sleep(0.1)
         if len(chStatus) == 0:
@@ -318,7 +318,7 @@ try:
         datalog(csv_filename, t_off)
 
         #Turn off FC load
-        inst2.write(':ROUTe:CLOSe (%s)' % '@103,106') 
+        inst2.write(':ROUTe:OPEN (%s)' % '@103,106') 
         chStatus = query_34970A('@103,106')
         time.sleep(0.1)
         if len(chStatus) == 0:
