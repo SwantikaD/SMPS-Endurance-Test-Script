@@ -56,6 +56,31 @@ def datalog(logFile,time_on_off):
 
 def query_400V():
 
+    for attempt in range(3):
+        try:
+            reply = int(inst1.query('OUTP?'))
+        except Exception as e:
+            print(e)
+            if attempt == 2:
+                 print(datetime.now(), 'HV PSU not responding...')
+                 reply = -1
+            else:
+                 print(datetime.now(), 'Resend query to HV PSU...')
+                 time.sleep(2)
+                 continue  
+        else:
+            if reply == 1:
+                 print('HV is on...')
+            elif reply == 0:
+                 print('HV is off...')
+            else:
+                 print('HV PSU reply to query is: ' + str(reply)) 
+
+            break
+
+    return reply       
+          
+"""
     try:
         reply = int(inst1.query('OUTP?'))
     except Exception as e:
@@ -75,11 +100,17 @@ def query_400V():
         else:
             print('400V PSU reply to query is: ' + str(reply))
         
-    return reply    
+    return reply   
+"""
                               
+def count_character(string, character):
+    count = 0
+    for char in string:
+        if char == character:
+            count += 1
+    return count
 
 def query_34970A(ch_list):
-    reply = []
 
     # three retries
     for attempt in range(3):
@@ -91,42 +122,36 @@ def query_34970A(ch_list):
             print(e)
             if attempt == 2:
                 print(datetime.now(), '34970A not responding...')
+                reply = []
             else:
                 print(datetime.now(), 'Resend query to 34970A...')
                 time.sleep(2)
                 continue
         else:
-            ch_start = int(ch_list[3])
-            ch_end = int(ch_list[7])
+            commas = count_character(ch_list, ',')
+            colons = count_character(ch_list, ':')
+            #ch_end = int(ch_list[7])
 
-            if ch_list[4] == ':':
+            if commas == 0 and colons == 1:
+                ch_start = int(ch_list[3])
                 for i in range (len(reply)):
                     if reply[i] == '1':
                         print('Channel ' + str(ch_start + i) + ' open...')
                     elif reply[i] == '0':
                         print('Channel ' + str(ch_start + i) + ' close...')
                     else:
-                        reply[i] = 'x'
+                        reply[i] = '-1'
                         print('Channel ' + str(ch_start + i) + ' assigned value: ' + reply[i])
 
-            if ch_list[4] == ',':
-                for i in range (2):
-                    if i == 0:
-                        if reply[i] == '1':
-                            print('Channel ' + str(ch_start) + ' open...')
-                        elif reply[i] == '0':
-                            print('Channel ' + str(ch_start) + ' close...')
-                        else:
-                            reply[i] = 'x'
-                            print('34970A reply to channel ' + str(ch_start)+ ' assigned value: ' + reply[i])
+            elif colons == 0 and commas != 0:
+                for i in range (commas+1):
+                    if reply[i] == '1':
+                        print('Channel ' + ch_list[3 + 4*i] + ' open...')
+                    elif reply[i] == '0':
+                        print('Channel ' + ch_list[3 + 4*i] + ' close...')
                     else:
-                        if reply[i] == '1':
-                            print('Channel ' + str(ch_end) + ' open...')
-                        elif reply[i] == '0':
-                            print('Channel ' + str(ch_end) + ' close...')
-                        else:
-                            reply[i] = 'x'
-                            print('34970A reply to channel ' + str(ch_end)+ ' assigned value: ' + reply[i])
+                        reply[i] = '-1'
+                        print('34970A reply to channel ' + ch_list[3 + 4*i] + ' assigned value: ' + reply[i])
 
             break
     
@@ -213,8 +238,8 @@ except Exception as e:
 else:
     print ('34970A connection successful....\n')
     
-    inst2.write(':ROUTe:OPEN (%s)' % '@101:106')
-    chStatus = query_34970A('@101:106')
+    inst2.write(':ROUTe:OPEN (%s)' % '@101:109')
+    chStatus = query_34970A('@101:109')
     time.sleep(0.1)
 
     #check if all channels have status 1
@@ -238,71 +263,82 @@ try:
         time.sleep(1)
 
         #Turn on pri and sec loads
-        inst2.write(':ROUTe:CLOSe (%s)' % '@101,104') 
-        chStatus = query_34970A('@101,104')
+        inst2.write(':ROUTe:CLOSe (%s)' % '@101,104,107') 
+        chStatus = query_34970A('@101,104,107')
         time.sleep(0.1)
         if len(chStatus) == 0:
             print('No response from 34970A...')
-        if len(chStatus) == 2:
+        if len(chStatus) == 3:
             if chStatus[0] != '0':
                  raise Exception('channel 101 did not close')
             if chStatus[1] != '0':
                  raise Exception('channel 104 did not close')
+            if chStatus[2] != '0':
+                 raise Exception('channel 107 did not close')
+        
 
         time.sleep(1)
 
-        inst2.write(':ROUTe:CLOSe (%s)' % '@102,105') 
-        chStatus = query_34970A('@102,105')
+        inst2.write(':ROUTe:CLOSe (%s)' % '@102,105,108') 
+        chStatus = query_34970A('@102,105,108')
         time.sleep(0.1)
         if len(chStatus) == 0:
             print('No response from 34970A...')
-        if len(chStatus) == 2:
+        if len(chStatus) == 3:
             if chStatus[0] != '0':
                  raise Exception('channel 102 did not close')
             if chStatus[1] != '0':
                  raise Exception('channel 105 did not close')
-
+            if chStatus[2] != '0':
+                 raise Exception('channel 108 did not close')
+       
         #log data
         datalog(csv_filename, t_on)
 
         #Turn off pri and sec loads and turn on FC load
-        inst2.write(':ROUTe:OPEN (%s)' % '@102,105') 
-        chStatus = query_34970A('@102,105')
+        inst2.write(':ROUTe:OPEN (%s)' % '@102,105,108') 
+        chStatus = query_34970A('@102,105,108')
         time.sleep(0.1)
         if len(chStatus) == 0:
             print('No response from 34970A...')
-        if len(chStatus) == 2:
+        if len(chStatus) == 3:
             if chStatus[0] != '1':
                  raise Exception('channel 102 did not open')
             if chStatus[1] != '1':
                  raise Exception('channel 105 did not open')
+            if chStatus[2] != '1':
+                 raise Exception('channel 108 did not open')
 
         time.sleep(1)
 
-        inst2.write(':ROUTe:OPEN (%s)' % '@101,104') 
-        chStatus = query_34970A('@101,104')
+        inst2.write(':ROUTe:OPEN (%s)' % '@101,104,107') 
+        chStatus = query_34970A('@101,104,107')
         time.sleep(0.1)
         if len(chStatus) == 0:
             print('No response from 34970A...')
-        if len(chStatus) == 2:
+        if len(chStatus) == 3:
             if chStatus[0] != '1':
                  raise Exception('channel 101 did not open')
             if chStatus[1] != '1':
                  raise Exception('channel 104 did not open')
-
+            if chStatus[2] != '1':
+                 raise Exception('channel 107 did not open')
+        
         time.sleep(1)
 
         #Turn on FC load
-        inst2.write(':ROUTe:CLOSe (%s)' % '@103,106') 
-        chStatus = query_34970A('@103,106')
+        inst2.write(':ROUTe:CLOSe (%s)' % '@103,106,109') 
+        chStatus = query_34970A('@103,106,109')
         time.sleep(0.1)
         if len(chStatus) == 0:
             print('No response from 34970A...')
-        if len(chStatus) == 2:
+        if len(chStatus) == 3:
             if chStatus[0] != '0':
                  raise Exception('channel 103 did not close')
             if chStatus[1] != '0':
                  raise Exception('channel 106 did not close')
+            if chStatus[2] != '0':
+                 raise Exception('channel 109 did not close')
 
         time.sleep(1)
 
@@ -318,22 +354,24 @@ try:
         datalog(csv_filename, t_off)
 
         #Turn off FC load
-        inst2.write(':ROUTe:OPEN (%s)' % '@103,106') 
-        chStatus = query_34970A('@103,106')
+        inst2.write(':ROUTe:OPEN (%s)' % '@103,106,109') 
+        chStatus = query_34970A('@103,106,109')
         time.sleep(0.1)
         if len(chStatus) == 0:
             print('No response from 34970A...')
-        if len(chStatus) == 2:
+        if len(chStatus) == 3:
             if chStatus[0] != '1':
                  raise Exception('channel 103 did not open')
             if chStatus[1] != '1':
                  raise Exception('channel 106 did not open')
+            if chStatus[2] != '1':
+                 raise Exception('channel 109 did not open')
 
         time.sleep(1)
                             
 except (KeyboardInterrupt, Exception) as e:
     print(e)
-    inst2.write(':ROUTe:OPEN (%s)' % '@101:106')
+    inst2.write(':ROUTe:OPEN (%s)' % '@101:109')
     time.sleep(0.1)
     inst1.write('OUTP OFF')
     time.sleep(0.1)
