@@ -1,3 +1,9 @@
+########################################################
+#SMPSEnduranceTestScript.py
+#Created on: April 30, 2023
+#Author: Swantika Dhundia
+########################################################
+
 import pyvisa
 import time
 import csv
