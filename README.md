@@ -17,19 +17,17 @@ The repository includes the Python script for customization, and an executable (
 
 ## Prerequisites 
 
-***For running/customizing the Python script (SMPSEnduranceTestScript.py):***
+- ***For running/customizing the Python script (SMPSEnduranceTestScript.py):***
 
-- Python 3.10 (or higher)
-- PyVISA (`pip install pyvisa==1.13.0` or `pip install -r requirements.txt`)
-- National Instruments VISA (or another VISA backend)
-  
-You can download the NI-VISA drivers from the [NI website](https://www.ni.com/en-us/support/downloads/drivers/download.ni-visa.html).
+    - Python 3.10 (or higher)
+    - PyVISA (`pip install pyvisa==1.13.0` or `pip install -r requirements.txt`)
+    - National Instruments VISA (or another VISA backend)
+      You can download the NI-VISA drivers from the [NI website](https://www.ni.com/en-us/support/downloads/drivers/download.ni-visa.html).
 
-***For running the Executable (SMPSEnduranceTestScript.exe):***
+- ***For running the Executable (SMPSEnduranceTestScript.exe):***
 
-- National Instruments VISA (or another VISA backend)
-  
-You can download the NI-VISA drivers from the [NI website](https://www.ni.com/en-us/support/downloads/drivers/download.ni-visa.html).
+    - National Instruments VISA (or another VISA backend)
+      You can download the NI-VISA drivers from the [NI website](https://www.ni.com/en-us/support/downloads/drivers/download.ni-visa.html).
 
 
 ## Usage
@@ -43,10 +41,10 @@ You can download the NI-VISA drivers from the [NI website](https://www.ni.com/en
     SMPSEnduranceTestScript.exe
 
 4. Enter the settings for input HV Power Supply when prompted. See example below:
-    Enter voltage setting in volts: 400
-    Enter current setting in amps: 0.8
-    Enter power on time in sec: 900
-    Enter power off time in sec: 900
+    - Enter voltage setting in volts: 400
+    - Enter current setting in amps: 0.8
+    - Enter power on time in sec: 900
+    - Enter power off time in sec: 900
 
 5. The test starts automatically after configuration.
 

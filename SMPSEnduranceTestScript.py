@@ -386,13 +386,4 @@ except (KeyboardInterrupt, Exception) as e:
     rm.close()
     print('Program complete....')
     k = input('Press any key to close the console window...')
-    
-# except Exception as e:
-#     print(e)
-#     inst2.write(':ROUTe:OPEN (%s)' % '@101:103')
-#     inst1.close()
-#     inst2.close()
-#     rm.close()
-#     print('Program complete....')
-#     k = input('Press any key to close the console window...')
 
