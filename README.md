@@ -31,7 +31,7 @@ The repository includes the Python script for customization, and an executable (
 
 
 ## Usage
-1. Download and extract `Cap-Bank-Tester-v1.0.0.zip` from the Releases section of this [repository](https://github.com/SwantikaD/SMPS-Endurance-Test-Script). The extracted folder will contain the executable. 
+1. Download and extract `SMPS-Endurance-Tester-v1.0.0.zip` from the Releases section of this [repository](https://github.com/SwantikaD/SMPS-Endurance-Test-Script). The extracted folder will contain the executable. 
 
 2. Create `Data` folder in C drive to store the test data logs. 
 
