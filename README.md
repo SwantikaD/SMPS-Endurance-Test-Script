@@ -7,12 +7,12 @@ The repository includes the Python script for customization, and an executable (
 
 
 ## Features
-- Instrument communication check: Automatically verifies connectivity with the power supply and switch unit at the start of each test.
-- User-configurable PSU settings: Allows control of input voltage, current, and power cycle timing.
-- Switch unit control: Automates load switching for up to 3 SMPS PCBs, enabling simultaneous testing.
-- 1-second data logging: Records voltage and current values from the power supply. (Load voltages and currents are logged using NI DAQ)
-- Retry mechanism: Retries communication with instruments up to 3 times before aborting the test.
-- Safe shutdown: Easily stop the test and power off all instruments with CTRL+C.
+- **Instrument communication check:** Automatically verifies connectivity with the power supply and switch unit at the start of each test.
+- **User-configurable PSU settings:** Allows control of input voltage, current, and power cycle timing.
+- **Switch unit control:** Automates load switching for up to 3 SMPS PCBs, enabling simultaneous testing.
+- **1-second data logging:** Records voltage and current values from the power supply. (Load voltages and currents are logged using NI DAQ)
+- **Retry mechanism:** Retries communication with instruments up to 3 times before aborting the test.
+- **Safe shutdown:** Easily stop the test and power off all instruments with CTRL+C.
 
 
 ## Prerequisites 
@@ -31,20 +31,19 @@ The repository includes the Python script for customization, and an executable (
 
 
 ## Usage
-1. Clone this repository: 
-    git clone https://github.com/SwantikaD/SMPS-Qual-Test-Script
+1. Download and extract `Cap-Bank-Tester-v1.0.0.zip` from the Releases section of this [repository](https://github.com/SwantikaD/SMPS-Endurance-Test-Script). The extracted folder will contain the executable. 
 
 2. Create `Data` folder in C drive to store the test data logs. 
 
-3. Open command prompt, navigate to the repo location and run the executable:
-    cd <path/to/executable>
-    SMPSEnduranceTestScript.exe
+3. Open command prompt, navigate to the folder containing the executable and run it:
+    - cd <path/to/executable>
+    - SMPSEnduranceTestScript.exe
 
 4. Enter the settings for input HV Power Supply when prompted. See example below:
     - Enter voltage setting in volts: 400
     - Enter current setting in amps: 0.8
-    - Enter power on time in sec: 900
-    - Enter power off time in sec: 900
+    - Enter HV on time in sec: 900
+    - Enter HV off time in sec: 900
 
 5. The test starts automatically after configuration.
 

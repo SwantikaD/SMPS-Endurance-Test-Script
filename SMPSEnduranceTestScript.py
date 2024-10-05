@@ -11,6 +11,7 @@ from datetime import datetime
 import msvcrt
 import sys
 
+#query HV PSU voltage and current measurement and log to csv
 def datalog(logFile,time_on_off):
 
 	for i in range(int(time_on_off)):
@@ -59,8 +60,8 @@ def datalog(logFile,time_on_off):
 		#wait 0.7 sec
 		time.sleep(0.7)
 
-
-def query_400V():
+#check if HV PSU is on or off
+def query_HV():
 
     for attempt in range(3):
         try:
@@ -85,30 +86,8 @@ def query_400V():
             break
 
     return reply       
-          
-"""
-    try:
-        reply = int(inst1.query('OUTP?'))
-    except Exception as e:
-        print(e)
-        print(datetime.now(), 'Resend query to 400V PSU...')
-        try:
-            reply = int(inst1.query('OUTP?'))
-        except Exception as e:
-            print(e)
-            print(datetime.now(), 'Still no response from 400V PSU...')
-            reply = -1
-    finally:
-        if reply == 1:
-            print('400V is on...')
-        elif reply == 0:
-            print('400V is off...')
-        else:
-            print('400V PSU reply to query is: ' + str(reply))
-        
-    return reply   
-"""
-                              
+
+                             
 def count_character(string, character):
     count = 0
     for char in string:
@@ -116,6 +95,7 @@ def count_character(string, character):
             count += 1
     return count
 
+#turn mux channels on/off based on user input for load switching
 def query_34970A(ch_list):
 
     # three retries
@@ -181,8 +161,8 @@ print('Data log file created....\n')
 #Get user inputs: V_set, I_set, t_on, t_off
 v_set = input('Enter voltage setting in volts: ')
 i_set = input('Enter current setting in amps: ')
-t_on = input('Enter 400V on time in sec: ')
-t_off = input('Enter 400V off time in sec: ')
+t_on = input('Enter HV on time in sec: ')
+t_off = input('Enter HV off time in sec: ')
 
 #List visa resources
 print('\nConnecting to instrument....')
@@ -213,16 +193,16 @@ except Exception as e:
     #exit program
     sys.exit(1)
 else:
-    print ('400V PSU connection successful....\n')
+    print ('HV PSU connection successful....\n')
 
     #Turn off power supply at start
-    inst1_status = query_400V()
+    inst1_status = query_HV()
     if inst1_status == '1':
         inst1.write('OUTP OFF')
         time.sleep(0.1)
-        print('Instrument output was on. Now turned: ' + query_400V())
+        print('Instrument output was on. Now turned: ' + query_HV())
     elif inst1_status == '0':
-        print('400V PSU is off.')
+        print('HV PSU is off.')
 
     #Write settings input by user
     print('Writing voltage and current settings to the instrument...')
@@ -232,7 +212,7 @@ else:
     time.sleep(0.1)
     print('Voltage setting readback: ' + inst1.query('VSET?'))
     print('Current setting readback: ' + inst1.query('ISET?'))
-    print('400V PSU is ready...\n')
+    print('HV PSU is ready...\n')
                     
 try:
     string = inst2.query('*IDN?')
@@ -259,12 +239,12 @@ print('\nTest sequence started. Press ctrl+C to stop....')
                                 
 try:
     while True:
-        #Turn on 400V
+        #Turn on HV
         inst1.write('OUTP ON')
         time.sleep(0.1)
-        hvStatus = query_400V()
+        hvStatus = query_HV()
         if hvStatus != 1:
-             raise Exception('400V did not turn on')
+             raise Exception('HV did not turn on')
         print('FC charging...\n')
         time.sleep(1)
 
@@ -348,12 +328,12 @@ try:
 
         time.sleep(1)
 
-        #Turn off 400V
+        #Turn off HV
         inst1.write('OUTP OFF')
         time.sleep(0.1)
-        hvStatus = query_400V()
+        hvStatus = query_HV()
         if hvStatus != 0:
-            raise Exception('400V did not turn off')
+            raise Exception('HV did not turn off')
         print('FC discharging...\n')
 
         #log data
